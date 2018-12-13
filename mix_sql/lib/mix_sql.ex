@@ -1,18 +1,20 @@
 defmodule MixSql do
-  @moduledoc """
-  Documentation for MixSql.
-  """
+  @name Path.rootname(Mix.Local.name_for(:archive, Mix.Project.config()), ".ez")
 
-  @doc """
-  Hello world.
+  def run(command, args), do: dot_sql(command, args)
 
-  ## Examples
+  defp dot_sql(command, args) do
+    dot_sql =
+      [
+        Mix.Local.path_for(:archive),
+        @name,
+        @name,
+        "priv",
+        "dot_sql"
+      ]
+      |> Path.join()
 
-      iex> MixSql.hello
-      :world
-
-  """
-  def hello do
-    :world
+    System.cmd("chmod", ["+x", dot_sql])
+    System.cmd(dot_sql, [command] ++ args, into: IO.stream(:stdio, :line))
   end
 end
