@@ -9,7 +9,7 @@ Provides global Mix tasks to (partially) dump and load Git-friendly MySQL data.
 To install the globally available Mix tasks, please execute the following:
 
 ```bash
-mix archive.install https://raw.githubusercontent.com/archan937/dot_sql/master/mix_sql/mix_sql-0.1.0.ez
+mix archive.install https://github.com/archan937/dot_sql/raw/master/mix_sql/mix_sql-0.1.0.ez
 ```
 
 To use DotSql in your Elixir project, add DotSql to your dependencies:
