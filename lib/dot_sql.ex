@@ -45,7 +45,7 @@ defmodule DotSql do
           %{
             "user" => "root",
             "ignore" => [],
-            "tables" => [%{}],
+            "tables" => %{"" => nil},
             "file" => Path.join(Config.dir(), "#{name}.sql"),
             "from" => name,
             "to" => name
