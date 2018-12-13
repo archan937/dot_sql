@@ -1,11 +1,13 @@
 defmodule DotSql.CLI.Dump do
   @options [
     aliases: [
+      h: :host,
       u: :user,
       f: :from,
       t: :to
     ],
     switches: [
+      host: :string,
       user: :string,
       from: :string,
       to: :string

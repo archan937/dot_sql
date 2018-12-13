@@ -63,6 +63,7 @@ DotSql uses a `.sql` configuration file to known what to do. An example:
     }
   },
   "my_second_dot_sql_config": {
+    "host": "127.0.0.1",
     "user": "root",
     "from": "my_other_database",
     "to": "lorem_ipsum_db"

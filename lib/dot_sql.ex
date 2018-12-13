@@ -43,6 +43,7 @@ defmodule DotSql do
       config ->
         Map.merge(
           %{
+            "host" => "127.0.0.1",
             "user" => "root",
             "ignore" => [],
             "tables" => %{"" => nil},
@@ -77,6 +78,8 @@ defmodule DotSql do
       exec("mysqldump", [
         "-u",
         config["user"],
+        "-h",
+        config["host"],
         "--compact --order-by-primary",
         ignore,
         where,
@@ -97,6 +100,8 @@ defmodule DotSql do
       exec("mysql", [
         "-u",
         config["user"],
+        "-h",
+        config["host"],
         "-e",
         inspect("SHOW DATABASES LIKE '#{config["to"]}'")
       ]) != []
@@ -106,6 +111,8 @@ defmodule DotSql do
         exec("mysql", [
           "-u",
           config["user"],
+          "-h",
+          config["host"],
           "-e",
           inspect("DROP DATABASE #{config["to"]}")
         ])
@@ -121,6 +128,8 @@ defmodule DotSql do
     exec("mysql", [
       "-u",
       config["user"],
+      "-h",
+      config["host"],
       "-e",
       inspect("CREATE DATABASE #{config["to"]} CHARACTER SET utf8 COLLATE utf8_general_ci")
     ])
@@ -128,6 +137,8 @@ defmodule DotSql do
     exec("mysql", [
       "-u",
       config["user"],
+      "-h",
+      config["host"],
       config["to"],
       "<",
       config["file"]
