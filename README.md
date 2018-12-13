@@ -17,7 +17,7 @@ To use DotSql in your Elixir project, add DotSql to your dependencies:
 ```elixir
 def deps do
   [
-    {:dot_sql, "~> 0.1.0"}
+    {:dot_sql, "~> 0.1.0", git: "https://github.com/archan937/dot_sql.git"}
   ]
 end
 ```
