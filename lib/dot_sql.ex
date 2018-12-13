@@ -158,7 +158,7 @@ defmodule DotSql do
     |> List.wrap()
     |> Kernel.++(args)
     |> Enum.join(" ")
-    |> String.to_atom()
+    |> String.to_charlist()
     |> :os.cmd()
   end
 end
