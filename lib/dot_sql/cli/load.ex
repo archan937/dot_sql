@@ -1,9 +1,11 @@
 defmodule DotSql.CLI.Load do
   @options [
     aliases: [
+      v: :verbose,
       f: :force
     ],
     switches: [
+      verbose: :boolean,
       force: :boolean
     ]
   ]

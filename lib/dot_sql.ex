@@ -8,13 +8,15 @@ defmodule DotSql do
   @doc """
   Dump SQL data into a SQL file.
   """
-  def dump([]), do: Config.all() |> dump()
-  def dump(names) when is_list(names), do: Enum.each(names, &dump/1)
+  def dump(names, opts \\ [])
+  def dump([], opts), do: Config.all() |> dump(opts)
 
-  def dump(name) do
+  def dump(names, opts) when is_list(names), do: Enum.each(names, &dump(&1, opts))
+
+  def dump(name, opts) do
     case get_config(name) do
       nil -> nil
-      config -> mysql_dump(config)
+      config -> mysql_dump(config, opts)
     end
   end
 
@@ -56,8 +58,8 @@ defmodule DotSql do
     end
   end
 
-  defp mysql_dump(config) do
-    ensure_dir!()
+  defp mysql_dump(config, opts) do
+    ensure_dir!(opts)
 
     ignore =
       config["ignore"]
@@ -74,6 +76,9 @@ defmodule DotSql do
         end
 
       redirect = if passes == 0, do: ">", else: ">>"
+      postfix = if to_string(table) == "", do: "", else: ".#{table}"
+
+      puts("Dumping #{config["from"]}#{postfix} ...", opts)
 
       exec("mysqldump", [
         "-u",
@@ -93,9 +98,13 @@ defmodule DotSql do
 
       passes + 1
     end)
+
+    puts("Done.", opts)
   end
 
   defp mysql_load(config, opts) do
+    puts("Checking for #{config["to"]} database ...", opts)
+
     database_exists =
       exec("mysql", [
         "-u",
@@ -108,6 +117,8 @@ defmodule DotSql do
 
     if database_exists do
       if Keyword.get(opts, :force) do
+        puts("Dropping #{config["to"]} ...", opts)
+
         exec("mysql", [
           "-u",
           config["user"],
@@ -117,14 +128,18 @@ defmodule DotSql do
           inspect("DROP DATABASE #{config["to"]}")
         ])
 
-        mysql_load(config)
+        do_mysql_load(config, opts)
       end
     else
-      mysql_load(config)
+      do_mysql_load(config, opts)
     end
+
+    puts("Done.", opts)
   end
 
-  defp mysql_load(config) do
+  defp do_mysql_load(config, opts) do
+    puts("Creating #{config["to"]} database ...", opts)
+
     exec("mysql", [
       "-u",
       config["user"],
@@ -133,6 +148,8 @@ defmodule DotSql do
       "-e",
       inspect("CREATE DATABASE #{config["to"]} CHARACTER SET utf8 COLLATE utf8_general_ci")
     ])
+
+    puts("Loading #{config["file"]} ...", opts)
 
     exec("mysql", [
       "-u",
@@ -145,7 +162,15 @@ defmodule DotSql do
     ])
   end
 
-  defp ensure_dir!, do: Config.dir() |> File.mkdir_p!()
+  defp ensure_dir!(opts) do
+    dir = Config.dir()
+    puts("Checking for #{dir} directory ...", opts)
+
+    unless File.exists?(dir) do
+      puts("Creating #{dir} ...", opts)
+      File.mkdir_p!(dir)
+    end
+  end
 
   defp sanitize do
     [
@@ -171,5 +196,11 @@ defmodule DotSql do
     |> Enum.join(" ")
     |> String.to_charlist()
     |> :os.cmd()
+  end
+
+  defp puts(message, opts) do
+    if Keyword.get(opts, :verbose) do
+      IO.puts(message)
+    end
   end
 end
